@@ -146,8 +146,8 @@
 
 @layer components {
   .nav-rail {
-    @apply h-full bg-nav-background border-r border-border/50 backdrop-blur-xl;
-    @apply transition-all duration-300 ease-in-out flex-shrink-0;
+    @apply h-screen bg-nav-background border-r border-border/50 backdrop-blur-xl;
+    @apply transition-all duration-300 ease-in-out flex-shrink-0 overflow-hidden;
     width: 4rem; /* 64px - collapsed state */
   }
   
@@ -166,7 +166,7 @@
   }
   
   .nav-content {
-    @apply h-full flex flex-col;
+    @apply h-full flex flex-col overflow-hidden;
   }
   
   .nav-header {
@@ -181,7 +181,7 @@
   }
   
   .nav-items {
-    @apply flex-1 overflow-y-auto py-4;
+    @apply flex-1 overflow-y-auto overflow-x-hidden py-4;
   }
 
   .nav-item {
