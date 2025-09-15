@@ -152,7 +152,7 @@
   }
   
   .nav-rail.expanded {
-    width: 16rem; /* 256px - expanded state */
+    width: 14rem; /* 224px - narrower expanded state */
   }
   
   .nav-rail.mobile-overlay {
@@ -162,7 +162,7 @@
   
   .nav-rail.mobile-overlay .nav-content {
     @apply bg-nav-background h-full;
-    width: 16rem;
+    width: 14rem;
   }
   
   .nav-content {
@@ -257,7 +257,7 @@
   }
   
   .page-container.nav-expanded {
-    margin-left: 16rem; /* Expanded width */
+    margin-left: 14rem; /* Narrower expanded width */
   }
   
   @media (max-width: 768px) {

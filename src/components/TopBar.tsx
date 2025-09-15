@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Sun, Moon, Bell } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export const TopBar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
+  const [environment, setEnvironment] = useState(() => {
+    return localStorage.getItem('environment') || 'sandbox';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('environment', environment);
+  }, [environment]);
 
   return (
     <header className="top-bar">
@@ -37,6 +45,17 @@ export const TopBar: React.FC = () => {
 
       {/* Right section */}
       <div className="flex items-center space-x-4">
+        {/* Environment Toggle */}
+        <Select value={environment} onValueChange={setEnvironment}>
+          <SelectTrigger className="w-32 h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="sandbox">Sandbox</SelectItem>
+            <SelectItem value="prod">Prod</SelectItem>
+          </SelectContent>
+        </Select>
+
         <Button
           variant="ghost"
           size="sm"
