@@ -152,7 +152,7 @@
   }
   
   .nav-rail.expanded {
-    width: 14rem; /* 224px - narrower expanded state */
+    width: 12rem; /* 192px - slimmer expanded state */
   }
   
   .nav-rail.mobile-overlay {
@@ -233,7 +233,7 @@
   }
   
   .top-bar.nav-expanded {
-    @apply ml-64;
+    margin-left: 12rem; /* Match slimmer expanded width */
   }
 
   .search-input {
@@ -257,7 +257,7 @@
   }
   
   .page-container.nav-expanded {
-    margin-left: 14rem; /* Narrower expanded width */
+    margin-left: 12rem; /* Slimmer expanded width */
   }
   
   @media (max-width: 768px) {
