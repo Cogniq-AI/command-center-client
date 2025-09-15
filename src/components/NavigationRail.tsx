@@ -146,18 +146,20 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ currentPage, onN
                 </h2>
               )}
             </div>
-            <button
-              onClick={toggleExpanded}
-              className="nav-toggle"
-              aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-              title={`${isExpanded ? 'Collapse' : 'Expand'} (Press [)`}
-            >
-              <ChevronRight 
-                className={`h-4 w-4 transition-transform duration-200 ${
-                  isExpanded ? 'rotate-180' : ''
-                }`} 
-              />
-            </button>
+            {!(isPinned && isExpanded) && (
+              <button
+                onClick={toggleExpanded}
+                className="nav-toggle"
+                aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+                title={`${isExpanded ? 'Collapse' : 'Expand'} (Press [)`}
+              >
+                <ChevronRight 
+                  className={`h-4 w-4 transition-transform duration-200 ${
+                    isExpanded ? 'rotate-180' : ''
+                  }`} 
+                />
+              </button>
+            )}
           </div>
 
           {/* Navigation Items */}

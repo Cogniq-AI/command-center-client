@@ -146,17 +146,17 @@
 
 @layer components {
   .nav-rail {
-    @apply fixed left-0 top-0 h-full bg-nav-background border-r border-border/50 backdrop-blur-xl z-50;
-    @apply transition-all duration-300 ease-in-out;
+    @apply h-full bg-nav-background border-r border-border/50 backdrop-blur-xl;
+    @apply transition-all duration-300 ease-in-out flex-shrink-0;
     width: 4rem; /* 64px - collapsed state */
   }
   
   .nav-rail.expanded {
-    width: 10rem; /* 192px - slimmer expanded state */
+    width: 12rem; /* 192px - slimmer expanded state */
   }
   
   .nav-rail.mobile-overlay {
-    @apply fixed inset-0 bg-black/50 backdrop-blur-sm;
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-50;
     width: 100vw;
   }
   
@@ -231,10 +231,6 @@
     @apply flex items-center justify-between sticky top-0 z-40;
     @apply transition-all duration-300;
   }
-  
-  .top-bar.nav-expanded {
-    margin-left: 10rem; /* Match slimmer expanded width */
-  }
 
   .search-input {
     @apply bg-muted/50 border-0 focus:bg-background focus:ring-2 focus:ring-primary/20;
@@ -252,22 +248,7 @@
 
   .page-container {
     @apply min-h-screen bg-gradient-to-br from-background to-background-alt;
-    @apply transition-all duration-300;
-    margin-left: 4rem; /* Default collapsed width */
-  }
-  
-  .page-container.nav-expanded {
-    margin-left: 10rem; /* Slimmer expanded width */
-  }
-  
-  @media (max-width: 768px) {
-    .page-container {
-      margin-left: 4rem !important;
-    }
-    
-    .top-bar {
-      margin-left: 0 !important;
-    }
+    @apply transition-all duration-300 flex-1;
   }
 
   .page-content {

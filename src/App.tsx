@@ -51,7 +51,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full flex">
       {/* Navigation Rail */}
       <NavigationRail 
         currentPage={currentPage} 
@@ -59,7 +59,7 @@ const AppContent: React.FC = () => {
       />
       
       {/* Main Content Area */}
-      <div className={`page-container ${isExpanded && !isMobile ? 'nav-expanded' : ''}`}>
+      <div className="page-container">
         {/* Top Bar */}
         <TopBar />
         
