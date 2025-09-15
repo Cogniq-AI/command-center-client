@@ -21,10 +21,10 @@
     --card-hover: 240 5% 98%;
     
     /* Navigation */
-    --nav-background: 240 6% 10%;
-    --nav-foreground: 240 5% 84%;
+    --nav-background: 0 0% 98%;
+    --nav-foreground: 240 10% 9%;
     --nav-active: 243 75% 59%;
-    --nav-hover: 240 4% 16%;
+    --nav-hover: 240 5% 96%;
     
     /* Interactive Elements */
     --accent: 243 75% 59%;
@@ -93,7 +93,7 @@
     
     /* Navigation */
     --nav-background: 240 8% 6%;
-    --nav-foreground: 240 4% 60%;
+    --nav-foreground: 240 5% 84%;
     --nav-active: 243 75% 65%;
     --nav-hover: 240 6% 12%;
     
@@ -146,11 +146,46 @@
 
 @layer components {
   .nav-rail {
-    @apply fixed left-0 top-0 h-full w-16 bg-nav-background border-r border-border/50 backdrop-blur-xl z-50;
+    @apply fixed left-0 top-0 h-full bg-nav-background border-r border-border/50 backdrop-blur-xl z-50;
+    @apply transition-all duration-300 ease-in-out;
+    width: 4rem; /* 64px - collapsed state */
   }
   
+  .nav-rail.expanded {
+    width: 16rem; /* 256px - expanded state */
+  }
+  
+  .nav-rail.mobile-overlay {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm;
+    width: 100vw;
+  }
+  
+  .nav-rail.mobile-overlay .nav-content {
+    @apply bg-nav-background h-full;
+    width: 16rem;
+  }
+  
+  .nav-content {
+    @apply h-full flex flex-col;
+  }
+  
+  .nav-header {
+    @apply flex items-center justify-between p-4 border-b border-border/50;
+    min-height: 4rem;
+  }
+  
+  .nav-toggle {
+    @apply flex items-center justify-center w-8 h-8 rounded-md;
+    @apply text-nav-foreground hover:text-nav-active hover:bg-nav-hover;
+    @apply transition-all duration-200 cursor-pointer;
+  }
+  
+  .nav-items {
+    @apply flex-1 overflow-y-auto py-4;
+  }
+
   .nav-item {
-    @apply relative flex h-12 w-12 items-center justify-center rounded-lg mx-2 my-1;
+    @apply relative flex items-center rounded-lg mx-2 my-1 min-h-12;
     @apply text-nav-foreground hover:text-nav-active hover:bg-nav-hover;
     @apply transition-all duration-200 cursor-pointer;
   }
@@ -164,35 +199,89 @@
     @apply absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-nav-active rounded-r-full;
   }
   
+  .nav-item-icon {
+    @apply flex items-center justify-center w-12 h-12 flex-shrink-0;
+  }
+  
+  .nav-item-label {
+    @apply ml-3 text-sm font-medium truncate;
+    @apply transition-all duration-200;
+  }
+  
+  .nav-rail:not(.expanded) .nav-item-label {
+    @apply opacity-0 invisible w-0;
+  }
+  
+  .nav-rail.expanded .nav-item-label {
+    @apply opacity-100 visible w-auto;
+  }
+  
+  .nav-pin-section {
+    @apply p-4 border-t border-border/50;
+  }
+  
+  .nav-pin-button {
+    @apply flex items-center w-full p-2 rounded-md;
+    @apply text-nav-foreground hover:text-nav-active hover:bg-nav-hover;
+    @apply transition-all duration-200 cursor-pointer text-sm;
+  }
+
   .top-bar {
     @apply h-14 bg-card/80 backdrop-blur-xl border-b border-border/50 px-6;
     @apply flex items-center justify-between sticky top-0 z-40;
+    @apply transition-all duration-300;
   }
   
+  .top-bar.nav-expanded {
+    @apply ml-64;
+  }
+
   .search-input {
     @apply bg-muted/50 border-0 focus:bg-background focus:ring-2 focus:ring-primary/20;
     @apply transition-all duration-200 placeholder:text-muted-foreground;
   }
-  
+
   .theme-toggle {
     @apply relative inline-flex h-9 w-16 items-center rounded-full;
     @apply bg-muted transition-colors duration-300 cursor-pointer;
   }
-  
+
   .theme-toggle[data-state="checked"] {
     @apply bg-primary;
   }
-  
+
   .page-container {
-    @apply min-h-screen ml-16 bg-gradient-to-br from-background to-background-alt;
+    @apply min-h-screen bg-gradient-to-br from-background to-background-alt;
+    @apply transition-all duration-300;
+    margin-left: 4rem; /* Default collapsed width */
   }
   
+  .page-container.nav-expanded {
+    margin-left: 16rem; /* Expanded width */
+  }
+  
+  @media (max-width: 768px) {
+    .page-container {
+      margin-left: 4rem !important;
+    }
+    
+    .top-bar {
+      margin-left: 0 !important;
+    }
+  }
+
   .page-content {
     @apply pt-14 p-6 space-y-6;
   }
-  
+
   .card-elevated {
     @apply bg-card hover:bg-card-hover border border-border/50 rounded-xl;
     @apply shadow-sm hover:shadow-lg transition-all duration-300;
+  }
+  
+  /* Backdrop for mobile */
+  .nav-backdrop {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-40;
+    @apply transition-opacity duration-200;
   }
 }

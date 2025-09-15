@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useSidebar } from '@/hooks/useSidebar';
 
 // Page imports
 import Dashboard from './pages/Dashboard';
@@ -20,8 +21,9 @@ import Settings from './pages/Settings';
 
 const queryClient = new QueryClient();
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
+  const { isExpanded, isMobile } = useSidebar();
 
   const renderPage = () => {
     switch (currentPage) {
@@ -49,28 +51,33 @@ const App: React.FC = () => {
   };
 
   return (
+    <div className="min-h-screen w-full">
+      {/* Navigation Rail */}
+      <NavigationRail 
+        currentPage={currentPage} 
+        onNavigate={setCurrentPage} 
+      />
+      
+      {/* Main Content Area */}
+      <div className={`page-container ${isExpanded && !isMobile ? 'nav-expanded' : ''}`}>
+        {/* Top Bar */}
+        <TopBar />
+        
+        {/* Page Content */}
+        <main id="main-content" className="page-content" role="main">
+          {renderPage()}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider>
-          <div className="min-h-screen w-full">
-            {/* Navigation Rail */}
-            <NavigationRail 
-              currentPage={currentPage} 
-              onNavigate={setCurrentPage} 
-            />
-            
-            {/* Main Content Area */}
-            <div className="page-container">
-              {/* Top Bar */}
-              <TopBar />
-              
-              {/* Page Content */}
-              <main id="main-content" className="page-content" role="main">
-                {renderPage()}
-              </main>
-            </div>
-          </div>
-          
+          <AppContent />
           <Toaster />
           <Sonner />
         </TooltipProvider>
