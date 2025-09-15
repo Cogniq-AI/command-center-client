@@ -148,6 +148,7 @@
   .nav-rail {
     @apply h-screen bg-nav-background border-r border-border/50;
     @apply transition-all duration-300 ease-in-out flex-shrink-0 overflow-hidden;
+    @apply sticky top-0 z-40;
     width: 4rem; /* 64px - collapsed state */
   }
   
