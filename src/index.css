@@ -146,9 +146,8 @@
 
 @layer components {
   .nav-rail {
-    @apply h-screen bg-nav-background border-r border-border/50;
-    @apply transition-all duration-300 ease-in-out flex-shrink-0 overflow-hidden;
-    width: 4rem; /* 64px - collapsed state */
+    @apply fixed left-0 top-0 h-[100dvh] bg-nav-background border-r border-border/50 overflow-hidden transition-all duration-300 ease-in-out;
+  width: var(--nav-w);
   }
   
   .nav-rail.expanded {
