@@ -152,7 +152,7 @@
   .nav-item {
     @apply relative flex h-12 w-12 items-center justify-center rounded-lg mx-2 my-1;
     @apply text-nav-foreground hover:text-nav-active hover:bg-nav-hover;
-    @apply transition-all duration-200 cursor-pointer group;
+    @apply transition-all duration-200 cursor-pointer;
   }
   
   .nav-item.active {

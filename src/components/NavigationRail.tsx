@@ -51,7 +51,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ currentPage, onN
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => onNavigate(item.id)}
-                    className={`nav-item ${isActive ? 'active' : ''}`}
+                    className={`nav-item group ${isActive ? 'active' : ''}`}
                     aria-label={item.label}
                     aria-current={isActive ? 'page' : undefined}
                   >
