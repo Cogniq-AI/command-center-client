@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Activity, 
   Cpu, 
@@ -16,32 +17,25 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSidebar } from '@/hooks/useSidebar';
 
-export type Page = 'dashboard' | 'agent' | 'tools' | 'data' | 'reports' | 'exceptions' | 'tickets' | 'audit' | 'settings';
-
 interface NavigationItem {
-  id: Page;
+  path: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
 }
 
 const navigationItems: NavigationItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: Activity },
-  { id: 'agent', label: 'Agent', icon: Cpu },
-  { id: 'tools', label: 'Tools', icon: Package },
-  { id: 'data', label: 'Data', icon: Database },
-  { id: 'reports', label: 'Reports', icon: FileBarChart },
-  { id: 'exceptions', label: 'Exceptions', icon: TriangleAlert },
-  { id: 'tickets', label: 'Tickets', icon: LifeBuoy },
-  { id: 'audit', label: 'Audit', icon: Shield },
-  { id: 'settings', label: 'Settings', icon: Settings },
+  { path: '/dashboard', label: 'Dashboard', icon: Activity },
+  { path: '/agent', label: 'Agent', icon: Cpu },
+  { path: '/tools', label: 'Tools', icon: Package },
+  { path: '/data', label: 'Data', icon: Database },
+  { path: '/reports', label: 'Reports', icon: FileBarChart },
+  { path: '/exceptions', label: 'Exceptions', icon: TriangleAlert },
+  { path: '/tickets', label: 'Tickets', icon: LifeBuoy },
+  { path: '/audit', label: 'Audit', icon: Shield },
+  { path: '/settings', label: 'Settings', icon: Settings },
 ];
 
-interface NavigationRailProps {
-  currentPage: Page;
-  onNavigate: (page: Page) => void;
-}
-
-export const NavigationRail: React.FC<NavigationRailProps> = ({ currentPage, onNavigate }) => {
+export const NavigationRail: React.FC = () => {
   const { 
     isExpanded, 
     isPinned, 
@@ -52,6 +46,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ currentPage, onN
     handleRouteChange 
   } = useSidebar();
   
+  const location = useLocation();
   const navRef = useRef<HTMLElement>(null);
 
   // Handle keyboard shortcuts
@@ -72,9 +67,8 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ currentPage, onN
     return () => window.removeEventListener('keydown', handleKeyboard);
   }, [toggleExpanded, togglePinned, isMobile, isExpanded, collapse]);
 
-  // Handle navigation and auto-collapse
-  const handleNavigation = (page: Page) => {
-    onNavigate(page);
+  // Handle navigation click and auto-collapse
+  const handleNavigationClick = () => {
     handleRouteChange();
   };
 
@@ -168,11 +162,12 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ currentPage, onN
               <div className="space-y-1">
                 {navigationItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = currentPage === item.id;
+                  const isActive = location.pathname === item.path;
                   
-                  const button = (
-                    <button
-                      onClick={() => handleNavigation(item.id)}
+                  const navLink = (
+                    <NavLink
+                      to={item.path}
+                      onClick={handleNavigationClick}
                       className={`nav-item group ${isActive ? 'active' : ''} w-full`}
                       aria-label={item.label}
                       aria-current={isActive ? 'page' : undefined}
@@ -183,23 +178,23 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ currentPage, onN
                       <span className="nav-item-label">
                         {item.label}
                       </span>
-                    </button>
+                    </NavLink>
                   );
 
                   // Only show tooltip when collapsed
                   return (
-                    <div key={item.id}>
+                    <div key={item.path}>
                       {!isExpanded ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            {button}
+                            {navLink}
                           </TooltipTrigger>
                           <TooltipContent side="right" sideOffset={10}>
                             <p>{item.label}</p>
                           </TooltipContent>
                         </Tooltip>
                       ) : (
-                        button
+                        navLink
                       )}
                     </div>
                   );

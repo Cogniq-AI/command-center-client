@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
-import { NavigationRail, type Page } from '@/components/NavigationRail';
+import { NavigationRail } from '@/components/NavigationRail';
 import { TopBar } from '@/components/TopBar';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useSidebar } from '@/hooks/useSidebar';
 
 // Page imports
 import Dashboard from './pages/Dashboard';
@@ -22,41 +22,10 @@ import Settings from './pages/Settings';
 const queryClient = new QueryClient();
 
 const AppContent: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>('dashboard');
-  const { isExpanded, isMobile } = useSidebar();
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'agent':
-        return <Agent />;
-      case 'tools':
-        return <Tools />;
-      case 'data':
-        return <Data />;
-      case 'reports':
-        return <Reports />;
-      case 'exceptions':
-        return <Exceptions />;
-      case 'tickets':
-        return <Tickets />;
-      case 'audit':
-        return <Audit />;
-      case 'settings':
-        return <Settings />;
-      default:
-        return <Dashboard />;
-    }
-  };
-
   return (
     <div className="min-h-screen w-full flex">
       {/* Navigation Rail */}
-      <NavigationRail 
-        currentPage={currentPage} 
-        onNavigate={setCurrentPage} 
-      />
+      <NavigationRail />
       
       {/* Main Content Area */}
       <div className="page-container">
@@ -65,7 +34,18 @@ const AppContent: React.FC = () => {
         
         {/* Page Content */}
         <main id="main-content" className="page-content" role="main">
-          {renderPage()}
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/agent" element={<Agent />} />
+            <Route path="/tools" element={<Tools />} />
+            <Route path="/data" element={<Data />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/exceptions" element={<Exceptions />} />
+            <Route path="/tickets" element={<Tickets />} />
+            <Route path="/audit" element={<Audit />} />
+            <Route path="/settings" element={<Settings />} />
+          </Routes>
         </main>
       </div>
     </div>
@@ -77,9 +57,11 @@ const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider>
-          <AppContent />
-          <Toaster />
-          <Sonner />
+          <BrowserRouter>
+            <AppContent />
+            <Toaster />
+            <Sonner />
+          </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
