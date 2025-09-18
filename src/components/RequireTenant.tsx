@@ -1,5 +1,6 @@
 import { useTenant } from '@/providers/TenantProvider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export function RequireTenant({ children }: { children: React.ReactNode }) {
   const { tenant, loading, error } = useTenant();
@@ -23,9 +24,15 @@ export function RequireTenant({ children }: { children: React.ReactNode }) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-4">
               Please check your URL or contact support if this issue persists.
             </p>
+            <Button 
+              onClick={() => window.location.href = '/auth'} 
+              className="w-full"
+            >
+              Back to Login
+            </Button>
           </CardContent>
         </Card>
       </div>
