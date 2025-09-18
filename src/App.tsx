@@ -18,6 +18,9 @@ import Exceptions from './pages/Exceptions';
 import Tickets from './pages/Tickets';
 import Audit from './pages/Audit';
 import Settings from './pages/Settings';
+import Auth from './pages/Auth';
+import { RequireAuth } from './components/RequireAuth';
+import { RequireTenant } from './components/RequireTenant';
 
 const queryClient = new QueryClient();
 
@@ -35,16 +38,71 @@ const AppContent: React.FC = () => {
         {/* Page Content */}
         <main id="main-content" className="page-content" role="main">
           <Routes>
+            <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/agent" element={<Agent />} />
-            <Route path="/tools" element={<Tools />} />
-            <Route path="/data" element={<Data />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/exceptions" element={<Exceptions />} />
-            <Route path="/tickets" element={<Tickets />} />
-            <Route path="/audit" element={<Audit />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/dashboard" element={
+              <RequireAuth>
+                <RequireTenant>
+                  <Dashboard />
+                </RequireTenant>
+              </RequireAuth>
+            } />
+            <Route path="/agent" element={
+              <RequireAuth>
+                <RequireTenant>
+                  <Agent />
+                </RequireTenant>
+              </RequireAuth>
+            } />
+            <Route path="/tools" element={
+              <RequireAuth>
+                <RequireTenant>
+                  <Tools />
+                </RequireTenant>
+              </RequireAuth>
+            } />
+            <Route path="/data" element={
+              <RequireAuth>
+                <RequireTenant>
+                  <Data />
+                </RequireTenant>
+              </RequireAuth>
+            } />
+            <Route path="/reports" element={
+              <RequireAuth>
+                <RequireTenant>
+                  <Reports />
+                </RequireTenant>
+              </RequireAuth>
+            } />
+            <Route path="/exceptions" element={
+              <RequireAuth>
+                <RequireTenant>
+                  <Exceptions />
+                </RequireTenant>
+              </RequireAuth>
+            } />
+            <Route path="/tickets" element={
+              <RequireAuth>
+                <RequireTenant>
+                  <Tickets />
+                </RequireTenant>
+              </RequireAuth>
+            } />
+            <Route path="/audit" element={
+              <RequireAuth>
+                <RequireTenant>
+                  <Audit />
+                </RequireTenant>
+              </RequireAuth>
+            } />
+            <Route path="/settings" element={
+              <RequireAuth>
+                <RequireTenant>
+                  <Settings />
+                </RequireTenant>
+              </RequireAuth>
+            } />
           </Routes>
         </main>
       </div>
