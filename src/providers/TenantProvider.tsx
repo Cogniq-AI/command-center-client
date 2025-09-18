@@ -32,6 +32,13 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const subdomain = getSubdomain(window.location.hostname);
     
+    // Allow auth page and root to work without tenant validation
+    const currentPath = window.location.pathname;
+    if (currentPath === '/auth' || currentPath === '/') {
+      setLoading(false);
+      return;
+    }
+    
     if (!subdomain) {
       setError('No subdomain detected');
       setLoading(false);

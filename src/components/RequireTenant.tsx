@@ -1,9 +1,11 @@
 import { useTenant } from '@/providers/TenantProvider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export function RequireTenant({ children }: { children: React.ReactNode }) {
   const { tenant, loading, error } = useTenant();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -28,7 +30,7 @@ export function RequireTenant({ children }: { children: React.ReactNode }) {
               Please check your URL or contact support if this issue persists.
             </p>
             <Button 
-              onClick={() => window.location.href = '/auth'} 
+              onClick={() => navigate('/auth')} 
               className="w-full"
             >
               Back to Login
