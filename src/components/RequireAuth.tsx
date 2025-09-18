@@ -25,7 +25,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
           </CardHeader>
           <CardContent>
             <Button 
-              onClick={() => window.location.href = '/auth'} 
+              onClick={() => window.location.href = '/login'} 
               className="w-full"
             >
               Go to Login

@@ -30,7 +30,7 @@ export function RequireTenant({ children }: { children: React.ReactNode }) {
               Please check your URL or contact support if this issue persists.
             </p>
             <Button 
-              onClick={() => navigate('/auth')} 
+              onClick={() => navigate('/login')} 
               className="w-full"
             >
               Back to Login

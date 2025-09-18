@@ -19,12 +19,31 @@ import Tickets from './pages/Tickets';
 import Audit from './pages/Audit';
 import Settings from './pages/Settings';
 import Auth from './pages/Auth';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 import { RequireAuth } from './components/RequireAuth';
 import { RequireTenant } from './components/RequireTenant';
 
 const queryClient = new QueryClient();
 
 const AppContent: React.FC = () => {
+  const isAuthPage = ['/login', '/signup', '/auth'].includes(window.location.pathname);
+
+  if (isAuthPage) {
+    return (
+      <div className="min-h-screen w-full">
+        <main id="main-content" className="w-full" role="main">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen w-full flex">
       {/* Navigation Rail */}
@@ -38,8 +57,6 @@ const AppContent: React.FC = () => {
         {/* Page Content */}
         <main id="main-content" className="page-content" role="main">
           <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={
               <RequireAuth>
                 <RequireTenant>
