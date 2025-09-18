@@ -40,7 +40,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
 
     const fetchTenant = async () => {
       try {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from('tenants')
           .select('*')
           .eq('subdomain', subdomain)

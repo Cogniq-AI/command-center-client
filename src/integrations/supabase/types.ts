@@ -14,13 +14,207 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agent_jobs: {
+        Row: {
+          agent_id: string
+          created_at: string
+          error_message: string | null
+          id: string
+          input_data: Json | null
+          output_data: Json | null
+          status: string | null
+          task_type: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          status?: string | null
+          task_type?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          status?: string | null
+          task_type?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_jobs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_jobs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agents: {
+        Row: {
+          category: string | null
+          configuration_schema: Json | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          sector: string | null
+          slug: string
+        }
+        Insert: {
+          category?: string | null
+          configuration_schema?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          sector?: string | null
+          slug: string
+        }
+        Update: {
+          category?: string | null
+          configuration_schema?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          sector?: string | null
+          slug?: string
+        }
+        Relationships: []
+      }
+      tenant_agents: {
+        Row: {
+          agent_id: string
+          config: Json | null
+          created_at: string
+          id: string
+          status: string | null
+          tenant_id: string
+        }
+        Insert: {
+          agent_id: string
+          config?: Json | null
+          created_at?: string
+          id?: string
+          status?: string | null
+          tenant_id: string
+        }
+        Update: {
+          agent_id?: string
+          config?: Json | null
+          created_at?: string
+          id?: string
+          status?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_agents_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenant_agents_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          plan: string | null
+          sector: string | null
+          subdomain: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          plan?: string | null
+          sector?: string | null
+          subdomain: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          plan?: string | null
+          sector?: string | null
+          subdomain?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          role: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          role: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          role?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_tenant_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      onboard_user: {
+        Args: { _full_name: string; _role: string; _tenant_subdomain: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

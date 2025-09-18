@@ -21,7 +21,7 @@ export async function signOut() {
 }
 
 export async function onboardUser(tenantSubdomain: string, role: string = 'admin', fullName: string = '') {
-  return supabase.rpc('onboard_user', {
+  return (supabase as any).rpc('onboard_user', {
     _tenant_subdomain: tenantSubdomain,
     _role: role,
     _full_name: fullName
