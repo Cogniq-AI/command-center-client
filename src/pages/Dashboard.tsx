@@ -1,10 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Activity, TrendingUp, Users, DollarSign, CheckCircle, Settings, Database, TriangleAlert } from 'lucide-react';
+import { getTenantAgents, getAgentJobsStats } from '@/lib/queries';
+import { useTenant } from '@/providers/TenantProvider';
 
 const Dashboard: React.FC = () => {
+  const { tenant } = useTenant();
+  const [tenantAgents, setTenantAgents] = useState<any[]>([]);
+  const [jobsStats, setJobsStats] = useState({ total: 0, success: 0, failed: 0, pending: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!tenant) return;
+
+    const loadDashboardData = async () => {
+      try {
+        const [agents, stats] = await Promise.all([
+          getTenantAgents(),
+          getAgentJobsStats(1) // Last 24 hours
+        ]);
+        setTenantAgents(agents);
+        setJobsStats(stats);
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, [tenant]);
+
   const kpis = [
     {
       title: 'Time saved (30d)',
@@ -36,11 +64,18 @@ const Dashboard: React.FC = () => {
     }
   ];
 
-  const activeTools = [
-    { name: "Invoice OCR", status: "OK", lastRun: "10:12", owner: "AP Ops", version: "1.4.2" },
-    { name: "AP Approval", status: "Warning", lastRun: "09:58", owner: "Finance", version: "2.1.0" },
-    { name: "Ticket Triage", status: "OK", lastRun: "10:10", owner: "Support", version: "0.9.7" },
-  ];
+  // Transform tenant agents data for display
+  const activeTools = tenantAgents.map(ta => ({
+    name: ta.agents?.name || 'Unknown Agent',
+    status: ta.status === 'active' ? 'OK' : 'Warning',
+    lastRun: new Date(ta.created_at).toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    }),
+    owner: ta.agents?.category || 'System',
+    version: '1.0.0'
+  }));
 
   const getStatusBadge = (status: string) => {
     const variant = status === 'OK' ? 'default' : status === 'Warning' ? 'destructive' : 'secondary';
@@ -94,7 +129,12 @@ const Dashboard: React.FC = () => {
             <CardDescription>Active automation tools and their status</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {activeTools.map((tool, index) => (
+            {loading ? (
+              <div className="flex items-center justify-center p-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              </div>
+            ) : activeTools.length > 0 ? (
+              activeTools.map((tool, index) => (
               <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
                 <div className="flex items-center space-x-4">
                   <div>
@@ -110,7 +150,12 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-center py-4 text-muted-foreground">
+                No active agents configured
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -123,16 +168,16 @@ const Dashboard: React.FC = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-success">432</div>
-                  <div className="text-xs text-muted-foreground">Runs</div>
+                  <div className="text-2xl font-bold text-success">{jobsStats.success}</div>
+                  <div className="text-xs text-muted-foreground">Success</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-destructive">7</div>
-                  <div className="text-xs text-muted-foreground">Failures</div>
+                  <div className="text-2xl font-bold text-destructive">{jobsStats.failed}</div>
+                  <div className="text-xs text-muted-foreground">Failed</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-warning">3</div>
-                  <div className="text-xs text-muted-foreground">Queued</div>
+                  <div className="text-2xl font-bold text-warning">{jobsStats.pending}</div>
+                  <div className="text-xs text-muted-foreground">Pending</div>
                 </div>
               </div>
               {/* Sparkline placeholder */}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,27 +9,67 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { getTenantAgents, getAvailableAgents, addTenantAgent } from '@/lib/queries';
+import { useTenant } from '@/providers/TenantProvider';
 
 const Tools: React.FC = () => {
   const { toast } = useToast();
+  const { tenant } = useTenant();
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [tenantAgents, setTenantAgents] = useState<any[]>([]);
+  const [availableAgents, setAvailableAgents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [requestForm, setRequestForm] = useState({
     environment: '',
     businessCase: '',
     timeline: ''
   });
 
-  const activeTools = [
-    { name: "Invoice OCR", status: "OK", lastRun: "10:12", owner: "AP Ops", version: "1.4.2" },
-    { name: "AP Approval", status: "Warning", lastRun: "09:58", owner: "Finance", version: "2.1.0" },
-    { name: "Ticket Triage", status: "OK", lastRun: "10:10", owner: "Support", version: "0.9.7" },
-  ];
+  useEffect(() => {
+    if (!tenant) return;
 
-  const inactiveTools = [
-    { name: "Vendor Master Hygiene", roi: "Est. 120h/mo", prereq: "ERP API access" },
-    { name: "Bank Reconciliation", roi: "Est. €3–7k/mo", prereq: "Bank feed / CSV" },
-    { name: "Contract Date Watcher", roi: "Renewal risk ↓", prereq: "DMS integration" },
-  ];
+    const loadToolsData = async () => {
+      try {
+        const [active, available] = await Promise.all([
+          getTenantAgents(),
+          getAvailableAgents()
+        ]);
+        setTenantAgents(active);
+        setAvailableAgents(available);
+      } catch (error) {
+        console.error('Error loading tools data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadToolsData();
+  }, [tenant]);
+
+  // Transform tenant agents for display
+  const activeTools = tenantAgents.map(ta => ({
+    name: ta.agents?.name || 'Unknown Agent',
+    status: ta.status === 'active' ? 'OK' : 'Warning',
+    lastRun: new Date(ta.created_at).toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    }),
+    owner: ta.agents?.category || 'System',
+    version: '1.0.0',
+    description: ta.agents?.description || 'No description available'
+  }));
+
+  // Transform available agents (not yet added to tenant)
+  const inactiveTools = availableAgents
+    .filter(agent => !tenantAgents.some(ta => ta.agents?.id === agent.id))
+    .map(agent => ({
+      id: agent.id,
+      name: agent.name,
+      roi: agent.sector ? `Sector: ${agent.sector}` : 'General purpose',
+      prereq: agent.configuration_schema ? 'Configuration required' : 'Ready to use',
+      description: agent.description || 'No description available'
+    }));
 
   const getStatusBadge = (status: string) => {
     const variant = status === 'OK' ? 'default' : status === 'Warning' ? 'destructive' : 'secondary';
@@ -74,7 +114,12 @@ const Tools: React.FC = () => {
 
         <TabsContent value="active" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {activeTools.map((tool, index) => (
+            {loading ? (
+              <div className="col-span-full flex items-center justify-center p-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : activeTools.length > 0 ? (
+              activeTools.map((tool, index) => (
               <Card key={index} className="card-elevated">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -99,13 +144,23 @@ const Tools: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-muted-foreground">
+                No active tools configured
+              </div>
+            )}
           </div>
         </TabsContent>
 
         <TabsContent value="inactive" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {inactiveTools.map((tool, index) => (
+            {loading ? (
+              <div className="col-span-full flex items-center justify-center p-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : inactiveTools.length > 0 ? (
+              inactiveTools.map((tool, index) => (
               <Card key={index} className="card-elevated">
                 <CardHeader>
                   <CardTitle className="text-lg">{tool.name}</CardTitle>
@@ -185,7 +240,12 @@ const Tools: React.FC = () => {
                   </Modal>
                 </CardContent>
               </Card>
-            ))}
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-muted-foreground">
+                All available agents are already active
+              </div>
+            )}
           </div>
         </TabsContent>
       </Tabs>

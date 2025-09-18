@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,20 +8,46 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Play, Square, RotateCcw, Trash2, Eye, TestTube } from 'lucide-react';
+import { getTenantAgents, getAgentJobsStats } from '@/lib/queries';
+import { useTenant } from '@/providers/TenantProvider';
 
 const Agent: React.FC = () => {
   const { toast } = useToast();
+  const { tenant } = useTenant();
   const [agentState, setAgentState] = useState<'Running' | 'Stopped'>('Running');
   const [queueCount, setQueueCount] = useState(3);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<'stop' | 'start' | 'clear' | 'rollback'>('stop');
   const [confirmForm, setConfirmForm] = useState({ reason: '', mfaCode: '' });
+  const [tenantAgents, setTenantAgents] = useState<any[]>([]);
+  const [jobsStats, setJobsStats] = useState({ total: 0, success: 0, failed: 0, pending: 0 });
+  const [loading, setLoading] = useState(true);
 
-  const activeTools = [
-    { name: "Invoice OCR" },
-    { name: "AP Approval" },
-    { name: "Ticket Triage" },
-  ];
+  useEffect(() => {
+    if (!tenant) return;
+
+    const loadAgentData = async () => {
+      try {
+        const [agents, stats] = await Promise.all([
+          getTenantAgents(),
+          getAgentJobsStats(1) // Last 24 hours
+        ]);
+        setTenantAgents(agents);
+        setJobsStats(stats);
+        setQueueCount(stats.pending);
+      } catch (error) {
+        console.error('Error loading agent data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAgentData();
+  }, [tenant]);
+
+  const activeTools = tenantAgents.map(ta => ({
+    name: ta.agents?.name || 'Unknown Agent'
+  }));
 
   const handleDangerAction = (action: 'stop' | 'start' | 'clear' | 'rollback') => {
     setModalAction(action);
@@ -141,16 +167,16 @@ const Agent: React.FC = () => {
 
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
-                <div className="text-xl font-bold text-success">432</div>
-                <div className="text-xs text-muted-foreground">Runs</div>
+                <div className="text-xl font-bold text-success">{jobsStats.success}</div>
+                <div className="text-xs text-muted-foreground">Success</div>
               </div>
               <div>
-                <div className="text-xl font-bold text-destructive">7</div>
+                <div className="text-xl font-bold text-destructive">{jobsStats.failed}</div>
                 <div className="text-xs text-muted-foreground">Failed</div>
               </div>
               <div>
-                <div className="text-xl font-bold text-warning">{queueCount}</div>
-                <div className="text-xs text-muted-foreground">Queue</div>
+                <div className="text-xl font-bold text-warning">{jobsStats.pending}</div>
+                <div className="text-xs text-muted-foreground">Pending</div>
               </div>
             </div>
           </CardContent>
