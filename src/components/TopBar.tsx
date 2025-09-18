@@ -29,7 +29,7 @@ export const TopBar: React.FC = () => {
       {/* Left section */}
       <div className="flex items-center space-x-6">
         <h1 className="text-xl font-semibold text-foreground">
-          [Client Company]
+          Retia31
         </h1>
         
         <div className="relative">
